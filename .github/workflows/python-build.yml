@@ -34,12 +34,14 @@ jobs:
       run: |
         echo "➡️ 工程执行"
         python v0_run_gen_video_work_flow.py
-
+        current_time=$(date +"%Y-%m-%d_%H:%M:%S")
+        echo current_time
+        $env.name=out_$current_time
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.6.2
       with:
         # Artifact name  
-        name: gen_artifact # optional, default is artifact
+        name: $env.name # optional, default is artifact
         # A file, directory or wildcard pattern that describes what to upload
         path: ./out_mp4/ 
         # The desired behavior if no files are found using the provided path.

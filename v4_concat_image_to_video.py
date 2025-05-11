@@ -226,7 +226,7 @@ if __name__ == "__main__":
     print(f'files: image_files: {image_files}')
 
     asyncio.run(concat_zoompan_video(
-        image_files, 1, "fade", 1, item_duration=5))
+        image_files, 1, "fade", 1, item_duration=5,output_name="out_zoompan.mp4"))
 
     # asyncio.run(
     #     concat_zoompan_video(image_files,

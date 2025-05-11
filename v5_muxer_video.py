@@ -3,7 +3,7 @@ import os
 
 
 if __name__ == '__main__':
-    def muxer_video(input_video, input_audio, srt):
+    def muxer_video(input_video, input_audio, srt, out_final_mp4):
         cmd = [
             "ffmpeg -y -hide_banner",
             "-hwaccel cuda",  # 使用CUDA硬件加速
@@ -14,10 +14,14 @@ if __name__ == '__main__':
             "-preset fast",
             "-profile:v high",
             "-shortest",
-            "-map 0:v -map 1:a out_muxered.mp4"
+            f"-map 0:v -map 1:a {out_final_mp4}"
         ]
         cmd_str = " ".join(cmd)
         print(f"\n{cmd_str}\n")
         result = os.system(cmd_str)
         print(result)
-    muxer_video("output_na.mp4", "out.mp3", "output.srt")
+    import os
+    out_dir="out_mp4"
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    muxer_video("output_na.mp4", "out.mp3", "output.srt","out_dir/out_muxered.mp4")
