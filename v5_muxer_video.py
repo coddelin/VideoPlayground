@@ -24,4 +24,4 @@ if __name__ == '__main__':
     out_dir="out_mp4"
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    muxer_video("output_na.mp4", "out.mp3", "output.srt","out_dir/out_muxered.mp4")
+    muxer_video("out_zoompan.mp4", "out.mp3", "output.srt","out_dir/out_muxered.mp4")
