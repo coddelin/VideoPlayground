@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: [self-hosted,Linux,Zp-runner]
+    runs-on: [zp-nc04]
     strategy:
       max-parallel: 5
 
