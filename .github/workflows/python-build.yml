@@ -28,7 +28,7 @@ jobs:
         # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: install FFmpeg
       run: |
-        ffmpeg --version
+        ffmpeg -version
         
     - name: build
       run: |
