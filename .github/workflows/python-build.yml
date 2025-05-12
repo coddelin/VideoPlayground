@@ -19,7 +19,8 @@ jobs:
               echo "➡️ 目录已存在:"
               echo "➡️ 拉取最新代码 git pull..."
               git remote set-url origin https://gh-proxy.com/github.com/coddelin/VideoPlayground.git
-              git pull
+              #git checkout main
+              git pull origin main
           else
               echo "➡️ 项目目录不存在，开始克隆代码仓库"
               git clone https://github.com/coddelin/VideoPlayground.git .
