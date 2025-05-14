@@ -200,12 +200,12 @@ async def concat_zoompan_video(
             f"{total_duration}",
             "-map",
             '[outv]',
-            # "-c:v",
-            # "libx264",
+            "-c:v",
+             "libx264",
             
-            "-c:v h264_nvenc",  # 使用NVIDIA硬件编码器
-            # "-preset",
-            # "ultrafast",
+            #"-c:v h264_nvenc",  # 使用NVIDIA硬件编码器
+            "-preset",
+            "ultrafast",
             "-threads",
             "0",
         ]
