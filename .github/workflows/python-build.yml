@@ -45,6 +45,12 @@ jobs:
       run: |
         ffmpeg -version
         
+    - name: intall fonts
+      run: |
+        sudo cp -r ./fonts/* /usr/local/share/fonts/
+        sudo fc-cache -f -v
+        fc-list | grep Noto Serif SC
+        
     - name: build
       run: |
         echo "➡️ 工程执行"

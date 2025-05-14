@@ -44,3 +44,25 @@
 
 # 2、FFmpeg
 视频编辑工具    
+## 安装字体
+```bash
+#安装字体命令
+#1、拷贝字体到系统字体目录下
+sudo cp -r Klee_One /usr/local/share/fonts/
+#2、手动激活
+sudo fc-cache -f -v
+#3、查看字体安装与否
+fc-list | grep Klee
+#4、ffmpeg使用字体名称就是通过第三步骤查看到的字体安装名称
+```
+
+# 3、生成视频
+- 可以通过github actions 启动任务执行任务生成视频
+- 直接本地执行代码生成
+```bash
+python v0_run_gen_video_work_flow.py
+```
+或
+```bash
+./start_run.sh
+```

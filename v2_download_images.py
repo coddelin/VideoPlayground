@@ -24,8 +24,10 @@ def get_images(i):
     print(res.headers)
     if res.status_code == 200:
         image_name = f"img/images{i}.jpg"
-        names.append(image_name)
+        #保存文件名
+        # names.append(image_name)
         with open(image_name, "wb") as f:
+            #保存图片二进制
             f.write(res.content)
     return i
 
