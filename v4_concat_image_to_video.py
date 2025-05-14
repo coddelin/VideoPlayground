@@ -79,7 +79,7 @@ async def run_ffmpeg_cmd_without_gpu(
     tmp_name = f"{uuid}_{final_name}"
     tmp_path = f"{tmp_dir}/{tmp_name}"
     tmp_path = f"{tmp_dir}/{final_name}"
-    cmds = ["ffmpeg",   "-hwaccel cuda",  # 使用CUDA硬件加速
+    cmds = ["ffmpeg",  # "-hwaccel cuda",  # 使用CUDA硬件加速
             cmd, f"-y {tmp_path}"]
     cmd_str = " ".join(cmds)
 
