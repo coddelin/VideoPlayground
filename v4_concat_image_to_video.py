@@ -7,6 +7,7 @@ import uuid
 import json
 
 from my_log import log
+from v2_download_images import ITEM_IMAGE_SHOWING_DRATION
 
 
 async def get_video_info(file_path):
@@ -79,7 +80,7 @@ async def run_ffmpeg_cmd_without_gpu(
     tmp_name = f"{uuid}_{final_name}"
     tmp_path = f"{tmp_dir}/{tmp_name}"
     tmp_path = f"{tmp_dir}/{final_name}"
-    cmds = ["ffmpeg",  # "-hwaccel cuda",  # 使用CUDA硬件加速
+    cmds = ["ffmpeg",  "-hwaccel cuda",  # 使用CUDA硬件加速
             cmd, f"-y {tmp_path}"]
     cmd_str = " ".join(cmds)
 
@@ -158,8 +159,52 @@ async def concat_zoompan_video(
 
     if transition_name is not None:
         if transition_type == 1:
-            complex += f"[v0][v1]xfade=transition={transition_name}:duration=1:offset={item_duration}[vv1];"
+            xfade = [
+                "fade",  # 淡入淡出（默认）
+                "wipeleft",  # 从右向左擦除
+                "wiperight",  # 从左向右擦除
+                "wipeup",  # 从下向上擦除
+                "wipedown",  # 从上向下擦除
+                "slideleft",  # 从右滑动到左
+                "slideright",  # 从左滑动到右
+                "slideup",  # 从下滑动到上
+                "slidedown",  # 从上滑动到下
+                "circlecrop",  # 圆形遮罩展开
+                "rectcrop",  # 方形遮罩展开
+                "distance",  # 像素距离放大式溶解
+                "fadeblack",  # 淡出到黑再淡入
+                "fadewhite",  # 淡出到白再淡入
+                "radial",  # 放射状扩展溶解
+                "smoothleft",  # 平滑左滑动
+                "smoothright",  # 平滑右滑动
+                "smoothup",  # 平滑上滑动
+                "smoothdown",  # 平滑下滑动
+                "circleopen",  # 圆形从中心打开
+                "circleclose",  # 圆形从边缘收缩
+                "vertopen",  # 垂直从中间分开
+                "vertclose",  # 垂直向中间合并
+                "horzopen",  # 水平从中间分开
+                "horzclose",  # 水平向中间合并
+                "dissolve",  # 像素随机淡出淡入
+                "pixelize",  # 马赛克再清晰化
+                "diagtl",  # 左上到右下对角线展开
+                "diagtr",  # 右上到左下对角线展开
+                "diagbl",  # 左下到右上对角线展开
+                "diagbr",  # 右下到左上对角线展开
+                "hlslice",  # 水平方向从多段展开
+                "hrslice",  # 水平方向从多段合并
+                "vuslice",  # 垂直方向从多段展开
+                "vdslice",  # 垂直方向从多段合并
+                "hblur",  # 水平模糊转场
+                "fadegrayscale",  # 灰度淡入淡出
+                "rectangles",  # 随机矩形区域转场
+                "squeezeh",  # 水平挤压
+                "squeezev",  # 垂直挤压
+            ]
+            random.shuffle(xfade)
+            complex += f"[v0][v1]xfade=transition={xfade[0]}:duration=1:offset={item_duration}[vv1];"
             for i in range(1, img_size - 1):
+                transition_name = xfade[i % len(xfade)]
                 complex += f"[vv{i}][v{i+1}]xfade=transition={transition_name}:duration=1:offset={(i+1)*item_duration}[vv{i+1}];"
             complex += f'[vv{img_size-1}]format=yuv420p[outv]"'
         else:
@@ -200,19 +245,14 @@ async def concat_zoompan_video(
             f"{total_duration}",
             "-map",
             '[outv]',
-            "-c:v",
-             "libx264",
-            
-            #"-c:v h264_nvenc",  # 使用NVIDIA硬件编码器
-            "-preset",
-            "ultrafast",
-            "-threads",
-            "0",
+            # "-c:v libx264 -preset ultrafast",
+            "-c:v h264_nvenc",  # 使用NVIDIA硬件编码器
+            "-threads 0",
         ]
     )
 
     cmd = " ".join(command)
-
+    log(cmd)
     out_dir = "."
     stdout = await run_ffmpeg_cmd_without_gpu(out_dir, cmd, "", f"{output_name}")
     log(f"图片合成视频 {stdout}")
@@ -226,7 +266,7 @@ if __name__ == "__main__":
     print(f'files: image_files: {image_files}')
 
     asyncio.run(concat_zoompan_video(
-        image_files, 1, "fade", 1, item_duration=5,output_name="out_zoompan.mp4"))
+        image_files, 1, "fade", 1, item_duration=ITEM_IMAGE_SHOWING_DRATION, output_name="out_zoompan.mp4"))
 
     # asyncio.run(
     #     concat_zoompan_video(image_files,

@@ -6,12 +6,12 @@ if __name__ == '__main__':
     def muxer_video(input_video, input_audio, srt, out_final_mp4,Fontname="Noto Serif SC",FontSize=24,PrimaryColour="&H64F1F3"):
         cmd = [
             "ffmpeg -y -hide_banner",
-            #"-hwaccel cuda",  # 使用CUDA硬件加速
+            "-hwaccel cuda",  # 使用CUDA硬件加速
             f"-i {input_video}",
             f"-i {input_audio}",
             f"-vf \"subtitles={srt}:force_style='Fontname={Fontname},FontSize={FontSize},PrimaryColour={PrimaryColour}'\"",
-            #"-c:v h264_nvenc",  # 使用NVIDIA硬件编码器
-            "-c:v libx264",
+            "-c:v h264_nvenc",  # 使用NVIDIA硬件编码器
+            # "-c:v libx264",
             "-preset fast",
             "-profile:v high",
             "-shortest",

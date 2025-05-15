@@ -48,10 +48,10 @@ def calculate_md5(file_path):
             md5_hash.update(chunk)
     return md5_hash.hexdigest()
 
-
+ITEM_IMAGE_SHOWING_DRATION=3.0
 if __name__ == "__main__":
     time = get_duration("out.mp3")
-    num = math.ceil(time/5.0)
+    num = math.ceil(time/ITEM_IMAGE_SHOWING_DRATION)
     print(time, num)
     for i in range(num):
         image_name = f"img/images{i}.jpg"
