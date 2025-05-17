@@ -1,6 +1,5 @@
 .venv
 img
-v_out_mp3
 app.log
 out*
 *file_list*

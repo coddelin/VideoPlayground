@@ -8,6 +8,7 @@ import os
 import requests
 
 from v1_tts_gen import get_duration
+from v_constants import OUT_MP3
 
 
 url = "https://bing.ee123.net/img/rand"
@@ -50,7 +51,7 @@ def calculate_md5(file_path):
 
 ITEM_IMAGE_SHOWING_DRATION=3.0
 if __name__ == "__main__":
-    time = get_duration("out.mp3")
+    time = get_duration(OUT_MP3)
     num = math.ceil(time/ITEM_IMAGE_SHOWING_DRATION)
     print(time, num)
     for i in range(num):

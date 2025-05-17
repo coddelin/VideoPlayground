@@ -2,9 +2,12 @@ from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
 import os
 import subprocess
+import sys
+
+import edge_tts
 import time_tools
 
-out_dir = "v_out_mp3"
+out_dir = "."
 
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
@@ -25,24 +28,45 @@ def get_duration(input):
     print(time)
     return time
 
-
-def gen_tts(text: str, out):
-    voice = "zh-CN-YunjianNeural"
+@time_tools.timeCost
+def gen_tts(text: str, out,voice= "zh-CN-YunjianNeural"):
     cmd = [
         "edge-tts",
         f"-t \"{text.strip()}\"",
         f"-v {voice}",
-        f"--write-media {out}",
+        f"--write-media {out}.mp3",
+        f"--write-subtitles {out}.srt"
     ]
     cmd_str = " ".join(cmd)
-    print(f"正在生成语音 {out} ...")
+    print(f"正在生成语音 {out}.mp3 ...")
     print(cmd_str)
     run_cmd(cmd_str)
+@time_tools.timeCost    
+def gen_tts_with_SentenceBoundary(text: str, out:str,voice= "zh-CN-YunjianNeural"):
+    """生成按照句子的标点符号的srt"""
+    communicate = edge_tts.Communicate(text, voice, Boundary="SentenceBoundary")
+    submaker = edge_tts.SubMaker()
+    stdout = sys.stdout
+    stdout.write("gen_tts_with_SentenceBoundary...")
+    audio_bytes = []
+    with open(f"{out}.mp3","wb") as file:
+        for chunk in communicate.stream_sync():
+            if chunk["type"] == "audio":
+                audio_bytes.append(chunk["data"])
+                file.write(chunk["data"])
+            elif chunk["type"] in ("WordBoundary", "SentenceBoundary"):
+                submaker.feed(chunk)
+    SRT_FILE=f"{out}.srt"
+    with open(SRT_FILE, "w", encoding="utf-8") as file:
+        file.write(submaker.get_srt())
+        
+    stdout.write(f"audio file length: {len(audio_bytes)}")
+    # stdout.write(submaker.get_srt())
 
 
 @time_tools.timeCost
 def run_cmd(cmd_str):
-    os.system(cmd_str)
+    return os.system(cmd_str)
 
 
 def trim_silence_voice(input, output):
@@ -110,7 +134,7 @@ def generate_tts_mp3(lang):
     size = len(txt)
     with ThreadPoolExecutor(max_workers=12) as pool:    
             # 生成语音
-        _futures=[pool.submit(gen_tts,text=txt[i], out=os.path.join(out_dir, f"{lang}{i+1}_out.mp3")) for i in range(size)]
+        _futures=[pool.submit(gen_tts,text=txt[i], out=os.path.join(out_dir, f"{lang}{i+1}_out")) for i in range(size)]
         for f in futures.as_completed(_futures):
             print(f.result())
     return size
@@ -138,11 +162,20 @@ def concat_mp3(lang):
 if __name__ == '__main__':
     size = get_text_line_size()
     lang="zh"
-    generate_tts_mp3(lang)
+    # generate_tts_mp3(lang)
     # # 开始时批处理音频时长
     #deprecated
-    # start_trim_voice(lang)
-    
-    generate_srt_with_timestamps(lang)
-    concat_mp3(lang)
+    # # start_trim_voice(lang)
+    # generate_srt_with_timestamps(lang)
+    # concat_mp3(lang)
+    content=[]
+    with open("template_strings.txt", "r+", encoding="utf-8") as f:
+        while True:
+            t = f.readline().strip()
+            if t == "":#empty string of EOF
+                break
+            content.append(t)
+    content_str=" ".join(content)
+    gen_tts_with_SentenceBoundary(content_str,"out_paper",voice="zh-CN-shaanxi-XiaoniNeural")
+    # run_cmd("ffplay out_paper.mp3")
     
